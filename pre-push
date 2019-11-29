@@ -1,0 +1,21 @@
+#!/bin/sh
+
+
+branch=`git branch | grep \* | cut -d ' ' -f2`
+
+if [[ $branch == release* ]]
+then
+    currentVersion=`cat "./VERSION"`
+    releaseVersion=`echo $branch | cut -d '/' -f2`
+
+    if [ "$currentVersion" != "$releaseVersion" ]
+    then
+        echo -n "$releaseVersion" > "./VERSION"
+        git add .
+        git commit -m "Increment VERSION to $releaseVersion"
+        # the commit won't be part of the current push, so push again
+        git push
+        echo "$releaseVersion"
+    fi
+fi
+
